@@ -8,21 +8,35 @@ import java.util.*;
 public class Wallet {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
 
   @Column(name = "name", nullable = false)
   private String name;
 
-  @OneToMany(fetch = FetchType.EAGER, mappedBy = "wallet")
-  private List<Asset> assets;
+  @OneToMany(fetch = FetchType.EAGER, mappedBy = "wallet", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<Asset> assets = new ArrayList<>();
+
+  public Integer getId() {
+    return id;
+  }
+
+  public String getName() {
+    return name;
+  }
 
   public List<Asset> getAssets() {
     return assets;
   }
 
-  public void setAssets(List<Asset> assets) {
-    this.assets = assets;
+  public void addAsset(Asset asset) {
+    this.assets.add(asset);
+    asset.setWallet(this);
+  }
+
+  public void removeAsset(Asset asset) {
+    this.assets.remove(asset);
+    asset.setWallet(null);
   }
 
   @Override
@@ -46,5 +60,35 @@ public class Wallet {
         ", name='" + name + '\'' +
         ", assets=" + assets +
         '}';
+  }
+
+
+  public static final class WalletBuilder {
+    private Integer id;
+    private String name;
+
+    private WalletBuilder() {
+    }
+
+    public static WalletBuilder aWallet() {
+      return new WalletBuilder();
+    }
+
+    public WalletBuilder withId(Integer id) {
+      this.id = id;
+      return this;
+    }
+
+    public WalletBuilder withName(String name) {
+      this.name = name;
+      return this;
+    }
+
+    public Wallet build() {
+      Wallet wallet = new Wallet();
+      wallet.name = this.name;
+      wallet.id = this.id;
+      return wallet;
+    }
   }
 }

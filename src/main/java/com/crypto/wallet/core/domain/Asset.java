@@ -7,8 +7,9 @@ import java.util.*;
 @Entity
 @Table(name = "asset")
 public class Asset {
+
   @Id
-  @Column(name = "id", nullable = false)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @Column(name = "symbol", nullable = false)
@@ -24,15 +25,11 @@ public class Asset {
   @JoinColumn(name = "wallet_id")
   private Wallet wallet;
 
-  @OneToMany(fetch = FetchType.LAZY, mappedBy = "asset")
-  private List<AssetPriceHistory> assetPriceHistory;
+  @OneToMany(fetch = FetchType.LAZY, mappedBy = "asset", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<AssetPriceHistory> assetPriceHistory = new ArrayList<>();
 
   public Long getId() {
     return id;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
   }
 
   public Wallet getWallet() {
@@ -47,8 +44,14 @@ public class Asset {
     return assetPriceHistory;
   }
 
-  public void setAssetPriceHistory(List<AssetPriceHistory> assetPriceHistory) {
-    this.assetPriceHistory = assetPriceHistory;
+  public void addPriceHistory(AssetPriceHistory assetPriceHistory) {
+    this.assetPriceHistory.add(assetPriceHistory);
+    assetPriceHistory.setAsset(this);
+  }
+
+  public void removePriceHistory(AssetPriceHistory assetPriceHistory) {
+    this.assetPriceHistory.remove(assetPriceHistory);
+    assetPriceHistory.setAsset(null);
   }
 
   @Override
@@ -75,5 +78,41 @@ public class Asset {
         ", wallet=" + wallet +
         ", assetPriceHistory=" + assetPriceHistory +
         '}';
+  }
+
+  public static final class AssetBuilder {
+    private String symbol;
+    private BigDecimal quantity;
+    private BigDecimal price;
+
+    private AssetBuilder() {
+    }
+
+    public static AssetBuilder anAsset() {
+      return new AssetBuilder();
+    }
+
+    public AssetBuilder withSymbol(String symbol) {
+      this.symbol = symbol;
+      return this;
+    }
+
+    public AssetBuilder withQuantity(BigDecimal quantity) {
+      this.quantity = quantity;
+      return this;
+    }
+
+    public AssetBuilder withPrice(BigDecimal price) {
+      this.price = price;
+      return this;
+    }
+
+    public Asset build() {
+      Asset asset = new Asset();
+      asset.symbol = this.symbol;
+      asset.price = this.price;
+      asset.quantity = this.quantity;
+      return asset;
+    }
   }
 }

@@ -9,7 +9,7 @@ import java.util.*;
 public class AssetPriceHistory {
 
   @Id
-  @Column(name = "id", nullable = false)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @ManyToOne
@@ -21,6 +21,26 @@ public class AssetPriceHistory {
 
   @Column(name = "timestamp", nullable = false)
   private Long timestamp;
+
+  public Long getId() {
+    return id;
+  }
+
+  public Asset getAsset() {
+    return asset;
+  }
+
+  public void setAsset(Asset asset) {
+    this.asset = asset;
+  }
+
+  public BigDecimal getPrice() {
+    return price;
+  }
+
+  public Long getTimestamp() {
+    return timestamp;
+  }
 
   @Override
   public final boolean equals(Object o) {
@@ -44,5 +64,42 @@ public class AssetPriceHistory {
         ", price=" + price +
         ", timestamp=" + timestamp +
         '}';
+  }
+
+
+  public static final class AssetPriceHistoryBuilder {
+    private Long id;
+    private BigDecimal price;
+    private Long timestamp;
+
+    private AssetPriceHistoryBuilder() {
+    }
+
+    public static AssetPriceHistoryBuilder anAssetPriceHistory() {
+      return new AssetPriceHistoryBuilder();
+    }
+
+    public AssetPriceHistoryBuilder withId(Long id) {
+      this.id = id;
+      return this;
+    }
+
+    public AssetPriceHistoryBuilder withPrice(BigDecimal price) {
+      this.price = price;
+      return this;
+    }
+
+    public AssetPriceHistoryBuilder withTimestamp(Long timestamp) {
+      this.timestamp = timestamp;
+      return this;
+    }
+
+    public AssetPriceHistory build() {
+      AssetPriceHistory assetPriceHistory = new AssetPriceHistory();
+      assetPriceHistory.timestamp = this.timestamp;
+      assetPriceHistory.id = this.id;
+      assetPriceHistory.price = this.price;
+      return assetPriceHistory;
+    }
   }
 }
