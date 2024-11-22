@@ -24,6 +24,9 @@ public class Asset {
   @JoinColumn(name = "wallet_id")
   private Wallet wallet;
 
+  @OneToMany(fetch = FetchType.LAZY, mappedBy = "asset")
+  private List<AssetPriceHistory> assetPriceHistory;
+
   public Long getId() {
     return id;
   }
@@ -38,6 +41,14 @@ public class Asset {
 
   public void setWallet(Wallet wallet) {
     this.wallet = wallet;
+  }
+
+  public List<AssetPriceHistory> getAssetPriceHistory() {
+    return assetPriceHistory;
+  }
+
+  public void setAssetPriceHistory(List<AssetPriceHistory> assetPriceHistory) {
+    this.assetPriceHistory = assetPriceHistory;
   }
 
   @Override
@@ -62,6 +73,7 @@ public class Asset {
         ", quantity=" + quantity +
         ", price=" + price +
         ", wallet=" + wallet +
+        ", assetPriceHistory=" + assetPriceHistory +
         '}';
   }
 }
