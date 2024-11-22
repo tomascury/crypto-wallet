@@ -7,9 +7,11 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.boot.test.autoconfigure.orm.jpa.*;
 import org.springframework.test.annotation.*;
+import org.springframework.test.context.*;
 
 @DataJpaTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@ActiveProfiles(value = "test")
 class WalletJpaRepositoryTest {
 
   @Autowired
