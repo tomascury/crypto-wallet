@@ -9,14 +9,14 @@ import java.util.*;
 public class AssetPriceHistory {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @GeneratedValue(strategy = GenerationType.AUTO)
   private Long id;
 
   @ManyToOne
   @JoinColumn(name = "asset_id")
   private Asset asset;
 
-  @Column(name = "price", nullable = false)
+  @Column(name = "price", precision = 20, scale = 8, nullable = false)
   private BigDecimal price;
 
   @Column(name = "timestamp", nullable = false)

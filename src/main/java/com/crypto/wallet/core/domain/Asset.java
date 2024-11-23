@@ -9,24 +9,36 @@ import java.util.*;
 public class Asset {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @GeneratedValue(strategy = GenerationType.AUTO)
   private Long id;
 
   @Column(name = "symbol", nullable = false)
   private String symbol;
 
-  @Column(name = "quantity", nullable = false)
+  @Column(name = "quantity", precision = 20, scale = 8, nullable = false)
   private BigDecimal quantity;
 
-  @Column(name = "price", nullable = false)
+  @Column(name = "price", precision = 20, scale = 8, nullable = false)
   private BigDecimal price;
 
   @ManyToOne
-  @JoinColumn(name = "wallet_id")
+  @JoinColumn(name = "wallet_id", nullable = false)
   private Wallet wallet;
 
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "asset", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<AssetPriceHistory> assetPriceHistory = new ArrayList<>();
+
+  public String getSymbol() {
+    return symbol;
+  }
+
+  public BigDecimal getQuantity() {
+    return quantity;
+  }
+
+  public BigDecimal getPrice() {
+    return price;
+  }
 
   public Long getId() {
     return id;
