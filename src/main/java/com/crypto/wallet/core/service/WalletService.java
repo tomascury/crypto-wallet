@@ -2,6 +2,7 @@ package com.crypto.wallet.core.service;
 
 
 import com.crypto.wallet.core.domain.*;
+import java.time.*;
 import java.util.*;
 
 public interface WalletService {
@@ -12,4 +13,7 @@ public interface WalletService {
 
   List<Wallet> findAll();
 
+  WalletPerformance getWalletPerformance(Long id);
+
+  WalletPerformance getWalletPerformance(Long id, LocalDateTime dateTime);
 }

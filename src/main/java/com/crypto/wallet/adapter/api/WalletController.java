@@ -30,7 +30,13 @@ public class WalletController {
   @PutMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Object> updateWallet(@Validated(UpdateValidationGroup.class) @RequestBody @Valid final WalletDto walletDto) {
     var savedWallet = walletService.save(walletDto.toDomain());
-    return new ResponseEntity<>(WalletDto.toDto(savedWallet), HttpStatus.CREATED);
+    return new ResponseEntity<>(WalletDto.toDto(savedWallet), HttpStatus.OK);
+  }
+
+  @GetMapping("/performance/{id}")
+  public ResponseEntity<Object> getWalletPerformance(@PathVariable Long id) {
+    var walletPerformance = walletService.getWalletPerformance(id);
+    return new ResponseEntity<>(WalletPerformanceDto.toDto(walletPerformance), HttpStatus.OK);
   }
 
 }
