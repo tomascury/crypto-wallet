@@ -64,13 +64,17 @@ public class DefaultWalletService implements WalletService {
     wallet.getAssets().forEach(asset -> {
 
       Pageable pageable = Pageable.ofSize(1).withPage(0);
-      AssetPriceHistory oldestAssetPricePerAsset =
-          assetPriceHistoryJpaRepository.findOldestAssetPricePerAsset(asset.getId(), pageable).getFirst();
-      AssetPriceHistory assetPricePerAssetPerTimestamp =
-          assetPriceHistoryJpaRepository.findAssetPricePerAssetPerTimestamp(asset.getId(), startTimestamp, endTimestamp, pageable)
-              .getFirst();
-      BigDecimal initialPrice = oldestAssetPricePerAsset.getPrice();
-      BigDecimal currentPrice = assetPricePerAssetPerTimestamp.getPrice();
+      AssetPriceHistory oldestAssetPrice = assetPriceHistoryJpaRepository.findOldestAssetPricePerAsset(asset.getId(), pageable).getFirst();
+
+      List<AssetPriceHistory> assetPricePerAssetPerTimestampList =
+          assetPriceHistoryJpaRepository.findAssetPricePerAssetPerTimestamp(asset.getId(), startTimestamp, endTimestamp, pageable);
+
+      AssetPriceHistory latestPricePerAsset = assetPricePerAssetPerTimestampList.isEmpty() ?
+          assetPriceHistoryJpaRepository.findLatestAssetPricePerAsset(asset.getId(), pageable).getFirst() :
+          assetPricePerAssetPerTimestampList.getFirst();
+
+      BigDecimal initialPrice = oldestAssetPrice.getPrice();
+      BigDecimal currentPrice = latestPricePerAsset.getPrice();
       BigDecimal priceDifference = currentPrice.subtract(initialPrice);
       BigDecimal percentageChange = priceDifference
           .divide(initialPrice, 10, RoundingMode.HALF_UP)

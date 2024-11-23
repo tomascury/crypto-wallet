@@ -21,6 +21,15 @@ public interface AssetPriceHistoryJpaRepository extends JpaRepository<AssetPrice
       SELECT aph
         FROM AssetPriceHistory aph
        WHERE aph.asset.id = :assetId
+       ORDER BY aph.timestamp DESC
+      """)
+  List<AssetPriceHistory> findLatestAssetPricePerAsset(@Param("assetId") Long assetId,
+                                                       Pageable pageable);
+
+  @Query("""
+      SELECT aph
+        FROM AssetPriceHistory aph
+       WHERE aph.asset.id = :assetId
          AND aph.timestamp BETWEEN :startTimestamp AND :endTimestamp
        ORDER BY aph.timestamp DESC
       """)
