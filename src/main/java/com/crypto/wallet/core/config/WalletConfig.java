@@ -8,8 +8,8 @@ import org.springframework.context.annotation.*;
 public class WalletConfig {
 
   @Bean
-  WalletService walletService(WalletJpaRepository walletRepository) {
-    return new DefaultWalletService(walletRepository);
+  WalletService walletService(WalletJpaRepository walletRepository, AssetPriceHistoryJpaRepository assetPriceHistoryRepository) {
+    return new DefaultWalletService(walletRepository, assetPriceHistoryRepository);
   }
 
 }

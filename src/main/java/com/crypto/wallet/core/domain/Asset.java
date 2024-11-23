@@ -47,6 +47,10 @@ public class Asset {
     return price;
   }
 
+  public void setPrice(BigDecimal price) {
+    this.price = price;
+  }
+
   public Long getId() {
     return id;
   }

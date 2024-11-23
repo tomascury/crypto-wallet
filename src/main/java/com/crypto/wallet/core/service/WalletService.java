@@ -2,11 +2,14 @@ package com.crypto.wallet.core.service;
 
 
 import com.crypto.wallet.core.domain.*;
+import java.util.*;
 
 public interface WalletService {
 
-  default Wallet save(Wallet wallet) {
-    throw new IllegalStateException("Resource not implemented");
-  }
+  Wallet save(Wallet wallet);
+
+  void saveAssetPriceHistory(AssetPriceHistory assetPriceHistory);
+
+  List<Wallet> findAll();
 
 }
