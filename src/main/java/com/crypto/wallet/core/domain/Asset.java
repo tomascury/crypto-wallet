@@ -15,6 +15,9 @@ public class Asset {
   @Column(name = "symbol", nullable = false)
   private String symbol;
 
+  @Column(name = "name", nullable = false)
+  private String name;
+
   @Column(name = "quantity", precision = 20, scale = 8, nullable = false)
   private BigDecimal quantity;
 
@@ -30,6 +33,10 @@ public class Asset {
 
   public String getSymbol() {
     return symbol;
+  }
+
+  public String getName() {
+    return name;
   }
 
   public BigDecimal getQuantity() {
@@ -85,6 +92,7 @@ public class Asset {
     return "Asset{" +
         "id=" + id +
         ", symbol='" + symbol + '\'' +
+        ", name='" + name + '\'' +
         ", quantity=" + quantity +
         ", price=" + price +
         ", wallet=" + wallet +
@@ -94,6 +102,7 @@ public class Asset {
 
   public static final class AssetBuilder {
     private String symbol;
+    private String name;
     private BigDecimal quantity;
     private BigDecimal price;
 
@@ -106,6 +115,7 @@ public class Asset {
 
     public AssetBuilder withSymbol(String symbol) {
       this.symbol = symbol;
+      this.name = CryptoCurrency.getNameBySymbol(symbol);
       return this;
     }
 
@@ -122,8 +132,9 @@ public class Asset {
     public Asset build() {
       Asset asset = new Asset();
       asset.symbol = this.symbol;
-      asset.price = this.price;
+      asset.name = this.name;
       asset.quantity = this.quantity;
+      asset.price = this.price;
       return asset;
     }
   }

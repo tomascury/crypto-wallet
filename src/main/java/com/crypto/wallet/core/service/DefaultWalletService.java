@@ -22,4 +22,6 @@ public class DefaultWalletService implements WalletService {
     }
     return walletJpaRepository.save(wallet);
   }
+
+
 }

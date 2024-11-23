@@ -7,3 +7,8 @@ spring:
     username: walletapp
     password: itdoesntmatter
 
+asset:
+  market:
+    data:
+      update:
+        cron: "0 0/5 * * * ?" # every 5 minutes

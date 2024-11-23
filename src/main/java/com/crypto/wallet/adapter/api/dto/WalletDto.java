@@ -1,14 +1,16 @@
 package com.crypto.wallet.adapter.api.dto;
 
+import com.crypto.wallet.adapter.api.validation.*;
 import com.crypto.wallet.core.domain.*;
 import com.fasterxml.jackson.annotation.*;
+import jakarta.validation.*;
+import jakarta.validation.constraints.*;
 import java.math.*;
 import java.util.*;
-import org.apache.logging.log4j.core.config.plugins.validation.constraints.*;
 
-public record WalletDto(Long id,
-                        @NotBlank String name,
-                        @JsonProperty("assets") List<AssetDto> assetsDto) {
+public record WalletDto(@NotNull(groups = UpdateValidationGroup.class, message = "[id] cannot be null") Long id,
+                        @NotBlank(message = "[name] cannot be null") String name,
+                        @JsonProperty("assets") @Valid List<AssetDto> assetsDto) {
 
   public Wallet toDomain() {
     List<Asset> assets = AssetDto.toDomain(this.assetsDto);
@@ -28,7 +30,11 @@ public record WalletDto(Long id,
     return new WalletDto(wallet.getId(), wallet.getName(), assets);
   }
 
-  public record AssetDto(Long id, String symbol, BigDecimal quantity, BigDecimal price) {
+  public record AssetDto(@NotNull(groups = UpdateValidationGroup.class, message = "[asset.id] cannot be null") Long id,
+                         @NotBlank(message = "[asset.symbol] cannot be null") String symbol,
+                         String name,
+                         @NotNull(message = "[asset.quantity] cannot be null") BigDecimal quantity,
+                         @NotNull(message = "[asset.price] cannot be null") BigDecimal price) {
 
     public static List<Asset> toDomain(List<AssetDto> assetsDto) {
       List<Asset> assets = new ArrayList<>();
@@ -48,7 +54,7 @@ public record WalletDto(Long id,
     public static List<AssetDto> toDto(List<Asset> assets) {
       List<AssetDto> assetsDto = new ArrayList<>();
       for (Asset asset : assets) {
-        assetsDto.add(new AssetDto(asset.getId(), asset.getSymbol(), asset.getQuantity(), asset.getPrice()));
+        assetsDto.add(new AssetDto(asset.getId(), asset.getSymbol(), asset.getName(), asset.getQuantity(), asset.getPrice()));
       }
       return assetsDto;
     }
