@@ -82,7 +82,7 @@ class DefaultWalletServiceTest {
     Assertions.assertEquals("33.33", walletPerformance.bestAssetPerformance());
     Assertions.assertEquals("BTC", walletPerformance.worstPerformanceAssetSymbol());
     Assertions.assertEquals("20.00", walletPerformance.worstAssetPerformance());
-    Assertions.assertEquals(new BigDecimal("100"), walletPerformance.totalValue());
+    Assertions.assertEquals(new BigDecimal("100.00"), walletPerformance.totalValue());
   }
 
   private static Wallet getWallet() {

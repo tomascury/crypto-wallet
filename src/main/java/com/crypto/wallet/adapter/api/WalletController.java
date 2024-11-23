@@ -4,6 +4,7 @@ import com.crypto.wallet.adapter.api.dto.*;
 import com.crypto.wallet.adapter.api.validation.*;
 import com.crypto.wallet.core.service.*;
 import jakarta.validation.*;
+import java.time.*;
 import org.apache.logging.log4j.*;
 import org.springframework.http.*;
 import org.springframework.validation.annotation.*;
@@ -36,6 +37,12 @@ public class WalletController {
   @GetMapping("/performance/{id}")
   public ResponseEntity<Object> getWalletPerformance(@PathVariable Long id) {
     var walletPerformance = walletService.getWalletPerformance(id);
+    return new ResponseEntity<>(WalletPerformanceDto.toDto(walletPerformance), HttpStatus.OK);
+  }
+
+  @GetMapping("/performance/{id}/{timestamp}")
+  public ResponseEntity<Object> getWalletPerformance(@PathVariable Long id, @PathVariable Long timestamp) {
+    var walletPerformance = walletService.getWalletPerformance(id, timestamp);
     return new ResponseEntity<>(WalletPerformanceDto.toDto(walletPerformance), HttpStatus.OK);
   }
 

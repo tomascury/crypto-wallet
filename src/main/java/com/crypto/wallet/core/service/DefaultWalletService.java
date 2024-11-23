@@ -47,11 +47,12 @@ public class DefaultWalletService implements WalletService {
 
   @Override
   public WalletPerformance getWalletPerformance(Long id) {
-    return getWalletPerformance(id, LocalDateTime.now());
+    return getWalletPerformance(id, LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli());
   }
 
   @Override
-  public WalletPerformance getWalletPerformance(Long id, LocalDateTime dateTime) {
+  public WalletPerformance getWalletPerformance(Long id, Long timeStamp) {
+    LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(timeStamp), ZoneOffset.UTC);
     Instant dateTimeInstant = dateTime.toInstant(ZoneOffset.UTC);
     long startTimestamp = dateTimeInstant.minus(Duration.ofMinutes(assetMarketProperties.updateInterval())).toEpochMilli();
     long endTimestamp = dateTimeInstant.toEpochMilli();
