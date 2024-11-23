@@ -20,8 +20,8 @@ public class AssetMarketDataUpdateTask {
   @Scheduled(cron = "${asset.market.data.update.cron}")
   public void update() {
     LOGGER.info("Asset market data update started");
-    
-
+    var assetMarketData = assetMarketDataProvider.getMarketData("bitcoin");
+    LOGGER.info("Got: " + assetMarketData);
     LOGGER.info("Asset market data update ended");
   }
 }

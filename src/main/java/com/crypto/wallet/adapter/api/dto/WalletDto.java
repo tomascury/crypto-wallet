@@ -20,6 +20,12 @@ public record WalletDto(@NotNull(groups = UpdateValidationGroup.class, message =
         .build();
 
     for (Asset asset : assets) {
+      AssetPriceHistory assetPriceHistory = AssetPriceHistory.AssetPriceHistoryBuilder.anAssetPriceHistory()
+          .withPrice(asset.getPrice())
+          .withTimestamp(System.currentTimeMillis())
+          .build();
+
+      asset.addPriceHistory(assetPriceHistory);
       wallet.addAsset(asset);
     }
     return wallet;

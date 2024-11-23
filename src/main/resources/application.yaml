@@ -11,4 +11,5 @@ asset:
   market:
     data:
       update:
-        cron: "0 0/5 * * * ?" # every 5 minutes
+        cron: "0 0/1 * * * ?" # every 5 minutes
+      resourceUri: "https://api.coincap.io/v2"
