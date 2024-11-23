@@ -12,5 +12,6 @@ asset:
     data:
       update:
         cron: "0 0/5 * * * ?" # every 5 minutes
-      update-interval: 4 # 5 minutes
+      update-interval: 6 # 6 minutes
+      thread-pool: 3
       resourceUri: "https://api.coincap.io/v2"

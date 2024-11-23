@@ -11,6 +11,8 @@ asset:
     data:
       update:
         #cron: "0 0/1 * * * ?" # every 1 minutes
-        cron: "0 0 0 31 2 ?" # disable
+        cron: "0/30 0/1 * 1/1 * ?" # every 30 seconds
+        #cron: "0 0 0 31 2 ?" # disable
       update-interval: 5 # 5 minutes
+      thread-pool: 3
       resourceUri: "https://api.coincap.io/v2"
