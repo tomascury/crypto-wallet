@@ -9,7 +9,7 @@ public class Wallet {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Integer id;
+  private Long id;
 
   @Column(name = "name", nullable = false)
   private String name;
@@ -17,7 +17,7 @@ public class Wallet {
   @OneToMany(fetch = FetchType.EAGER, mappedBy = "wallet", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Asset> assets = new ArrayList<>();
 
-  public Integer getId() {
+  public Long getId() {
     return id;
   }
 
@@ -30,12 +30,12 @@ public class Wallet {
   }
 
   public void addAsset(Asset asset) {
-    this.assets.add(asset);
+    getAssets().add(asset);
     asset.setWallet(this);
   }
 
   public void removeAsset(Asset asset) {
-    this.assets.remove(asset);
+    getAssets().remove(asset);
     asset.setWallet(null);
   }
 
@@ -64,7 +64,7 @@ public class Wallet {
 
 
   public static final class WalletBuilder {
-    private Integer id;
+    private Long id;
     private String name;
 
     private WalletBuilder() {
@@ -74,7 +74,7 @@ public class Wallet {
       return new WalletBuilder();
     }
 
-    public WalletBuilder withId(Integer id) {
+    public WalletBuilder withId(Long id) {
       this.id = id;
       return this;
     }

@@ -28,6 +28,18 @@ public class Asset {
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "asset", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<AssetPriceHistory> assetPriceHistory = new ArrayList<>();
 
+  public String getSymbol() {
+    return symbol;
+  }
+
+  public BigDecimal getQuantity() {
+    return quantity;
+  }
+
+  public BigDecimal getPrice() {
+    return price;
+  }
+
   public Long getId() {
     return id;
   }
