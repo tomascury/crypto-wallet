@@ -5,3 +5,12 @@ spring:
       show_sql: true
       format_sql: true
       use_sql_comments: true
+
+asset:
+  market:
+    data:
+      update:
+        #cron: "0 0/1 * * * ?" # every 1 minutes
+        cron: "0 0 0 31 2 ?" # disable
+      update-interval: 200 # 5 minutes
+      resourceUri: "https://api.coincap.io/v2"

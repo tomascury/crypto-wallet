@@ -105,6 +105,7 @@ public class Asset {
   }
 
   public static final class AssetBuilder {
+    private Long id;
     private String symbol;
     private String name;
     private BigDecimal quantity;
@@ -115,6 +116,11 @@ public class Asset {
 
     public static AssetBuilder anAsset() {
       return new AssetBuilder();
+    }
+
+    public AssetBuilder withId(Long id) {
+      this.id = id;
+      return this;
     }
 
     public AssetBuilder withSymbol(String symbol) {
@@ -135,6 +141,7 @@ public class Asset {
 
     public Asset build() {
       Asset asset = new Asset();
+      asset.id = this.id;
       asset.symbol = this.symbol;
       asset.name = this.name;
       asset.quantity = this.quantity;

@@ -77,8 +77,8 @@ public class DefaultWalletService implements WalletService {
           .multiply(new BigDecimal("100"))
           .setScale(2, RoundingMode.HALF_UP);
 
-      LOGGER.info("initialPrice:" + initialPrice);
-      LOGGER.info("currentPrice:" + currentPrice);
+      LOGGER.info("initialPrice: [" + asset.getSymbol() + "] == " + initialPrice);
+      LOGGER.info("currentPrice: [" + asset.getSymbol() + "] == " + currentPrice);
       if (bestPercentageChange.get() == null || bestPercentageChange.get().compareTo(percentageChange) < 0) {
         bestPercentageChange.set(percentageChange);
         bestAssetPerformance.set(asset);
@@ -88,11 +88,11 @@ public class DefaultWalletService implements WalletService {
         worstPercentageChange.set(percentageChange);
         worstAssetPerformance.set(asset);
       }
-      totalAmount.set(totalAmount.get().add(currentPrice));
+      totalAmount.set(totalAmount.get().add(currentPrice.multiply(asset.getQuantity())));
 
     });
     return WalletPerformance.WalletPerformanceBuilder.aWalletPerformance()
-        .withTotalValue(totalAmount.get())
+        .withTotalValue(totalAmount.get().setScale(2, RoundingMode.HALF_UP))
         .withBestPerformanceAssetSymbol(bestAssetPerformance.get().getSymbol())
         .withBestAssetPerformance(bestPercentageChange.get().toString())
         .withWorstPerformanceAssetSymbol(worstAssetPerformance.get().getSymbol())
