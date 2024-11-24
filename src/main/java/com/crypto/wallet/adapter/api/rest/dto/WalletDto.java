@@ -13,14 +13,14 @@ public record WalletDto(@NotNull(groups = UpdateValidationGroup.class, message =
                         @JsonProperty("assets") @Valid List<AssetDto> assetsDto) {
 
   public Wallet toDomain() {
-    List<Asset> assets = AssetDto.toDomain(this.assetsDto);
-    Wallet wallet = Wallet.WalletBuilder.aWallet()
+    var assets = AssetDto.toDomain(this.assetsDto);
+    var wallet = Wallet.WalletBuilder.aWallet()
         .withId(this.id)
         .withName(this.name)
         .build();
 
     for (Asset asset : assets) {
-      AssetPriceHistory assetPriceHistory = AssetPriceHistory.AssetPriceHistoryBuilder.anAssetPriceHistory()
+      var assetPriceHistory = AssetPriceHistory.AssetPriceHistoryBuilder.anAssetPriceHistory()
           .withPrice(asset.getPrice())
           .withTimestamp(System.currentTimeMillis())
           .build();
@@ -32,7 +32,7 @@ public record WalletDto(@NotNull(groups = UpdateValidationGroup.class, message =
   }
 
   public static WalletDto toDto(Wallet wallet) {
-    List<AssetDto> assets = AssetDto.toDto(wallet.getAssets());
+    var assets = AssetDto.toDto(wallet.getAssets());
     return new WalletDto(wallet.getId(), wallet.getName(), assets);
   }
 
@@ -46,7 +46,7 @@ public record WalletDto(@NotNull(groups = UpdateValidationGroup.class, message =
       List<Asset> assets = new ArrayList<>();
       if (Objects.nonNull(assetsDto) && !assetsDto.isEmpty()) {
         for (AssetDto assetDto : assetsDto) {
-          Asset asset = Asset.AssetBuilder.anAsset()
+          var asset = Asset.AssetBuilder.anAsset()
               .withSymbol(assetDto.symbol)
               .withQuantity(assetDto.quantity)
               .withPrice(assetDto.price)

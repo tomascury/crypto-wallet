@@ -7,17 +7,17 @@ import com.crypto.wallet.core.ports.spi.*;
 import java.math.*;
 import java.time.*;
 import java.util.*;
-import java.util.concurrent.atomic.*;
 import org.apache.logging.log4j.*;
 import org.springframework.data.domain.*;
 
 public class DefaultWalletService implements WalletService {
 
   private static final Logger LOGGER = LogManager.getLogger(DefaultWalletService.class);
+  private static final Pageable LIMIT_1 = Pageable.ofSize(1).withPage(0);
 
-  WalletJpaRepository walletJpaRepository;
-  AssetPriceHistoryJpaRepository assetPriceHistoryJpaRepository;
-  AssetMarketProperties assetMarketProperties;
+  private final WalletJpaRepository walletJpaRepository;
+  private final AssetPriceHistoryJpaRepository assetPriceHistoryJpaRepository;
+  private final AssetMarketProperties assetMarketProperties;
 
   public DefaultWalletService(WalletJpaRepository walletJpaRepository,
                               AssetPriceHistoryJpaRepository assetPriceHistoryJpaRepository,
@@ -49,58 +49,65 @@ public class DefaultWalletService implements WalletService {
 
   @Override
   public WalletPerformance getWalletPerformance(Long id, Long timeStamp) {
-    LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(timeStamp), ZoneOffset.UTC);
-    Instant dateTimeInstant = dateTime.toInstant(ZoneOffset.UTC);
-    long startTimestamp = dateTimeInstant.minus(Duration.ofMinutes(assetMarketProperties.updateInterval())).toEpochMilli();
-    long endTimestamp = dateTimeInstant.toEpochMilli();
-    Wallet wallet = walletJpaRepository.getReferenceById(id);
-    AtomicReference<Asset> bestAssetPerformance = new AtomicReference<>();
-    AtomicReference<Asset> worstAssetPerformance = new AtomicReference<>();
-    AtomicReference<BigDecimal> bestPercentageChange = new AtomicReference<>();
-    AtomicReference<BigDecimal> worstPercentageChange = new AtomicReference<>();
-    AtomicReference<BigDecimal> totalAmount = new AtomicReference<>(new BigDecimal("0"));
-    wallet.getAssets().forEach(asset -> {
+    var wallet = walletJpaRepository.getReferenceById(id);
 
-      Pageable pageable = Pageable.ofSize(1).withPage(0);
-      AssetPriceHistory oldestAssetPrice = assetPriceHistoryJpaRepository.findOldestAssetPricePerAsset(asset.getId(), pageable).getFirst();
+    var localDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(timeStamp), ZoneOffset.UTC);
+    var dateTimeInstant = localDateTime.toInstant(ZoneOffset.UTC);
+    var startTimestamp = dateTimeInstant.minus(Duration.ofMinutes(assetMarketProperties.updateInterval())).toEpochMilli();
+    var endTimestamp = dateTimeInstant.toEpochMilli();
 
-      List<AssetPriceHistory> assetPricePerAssetPerTimestampList =
-          assetPriceHistoryJpaRepository.findAssetPricePerAssetPerTimestamp(asset.getId(), startTimestamp, endTimestamp, pageable);
+    Asset bestAssetPerformance = null;
+    Asset worstAssetPerformance = null;
+    BigDecimal bestPercentageChange = null;
+    BigDecimal worstPercentageChange = null;
+    BigDecimal totalValue = new BigDecimal("0");
 
-      AssetPriceHistory latestPricePerAsset = assetPricePerAssetPerTimestampList.isEmpty() ?
-          assetPriceHistoryJpaRepository.findLatestAssetPricePerAsset(asset.getId(), pageable).getFirst() :
+    for (Asset asset : wallet.getAssets()) {
+      var oldestAssetPrice = assetPriceHistoryJpaRepository.findOldestAssetPricePerAsset(asset.getId(), LIMIT_1).getFirst();
+
+      var assetPricePerAssetPerTimestampList =
+          assetPriceHistoryJpaRepository.findAssetPricePerAssetPerTimestamp(asset.getId(), startTimestamp, endTimestamp, LIMIT_1);
+      var latestPricePerAsset = assetPricePerAssetPerTimestampList.isEmpty() ?
+          assetPriceHistoryJpaRepository.findLatestAssetPricePerAsset(asset.getId(), LIMIT_1).getFirst() :
           assetPricePerAssetPerTimestampList.getFirst();
 
-      BigDecimal initialPrice = oldestAssetPrice.getPrice();
-      BigDecimal currentPrice = latestPricePerAsset.getPrice();
-      BigDecimal priceDifference = currentPrice.subtract(initialPrice);
-      BigDecimal percentageChange = priceDifference
-          .divide(initialPrice, 10, RoundingMode.HALF_UP)
-          .multiply(new BigDecimal("100"))
-          .setScale(2, RoundingMode.HALF_UP);
+      var initialPrice = oldestAssetPrice.getPrice();
+      var currentPrice = latestPricePerAsset.getPrice();
+      var percentageChange = calculatePercentageChange(currentPrice, initialPrice);
 
-      LOGGER.info("initialPrice: [" + asset.getSymbol() + "] == " + initialPrice);
-      LOGGER.info("currentPrice: [" + asset.getSymbol() + "] == " + currentPrice);
-      if (bestPercentageChange.get() == null || bestPercentageChange.get().compareTo(percentageChange) < 0) {
-        bestPercentageChange.set(percentageChange);
-        bestAssetPerformance.set(asset);
+      if (bestPercentageChange == null || bestPercentageChange.compareTo(percentageChange) < 0) {
+        bestPercentageChange = percentageChange;
+        bestAssetPerformance = asset;
       }
 
-      if (worstPercentageChange.get() == null || worstPercentageChange.get().compareTo(percentageChange) > 0) {
-        worstPercentageChange.set(percentageChange);
-        worstAssetPerformance.set(asset);
+      if (worstPercentageChange == null || worstPercentageChange.compareTo(percentageChange) > 0) {
+        worstPercentageChange = percentageChange;
+        worstAssetPerformance = asset;
       }
-      totalAmount.set(totalAmount.get().add(currentPrice.multiply(asset.getQuantity())));
+      totalValue = totalValue.add(currentPrice.multiply(asset.getQuantity()));
 
-    });
+      LOGGER.info("initialPrice: [{}] == {}", asset.getSymbol(), initialPrice);
+      LOGGER.info("currentPrice: [{}] == {}", asset.getSymbol(), currentPrice);
+    }
+
+    assert bestAssetPerformance != null;
+
     return WalletPerformance.WalletPerformanceBuilder.aWalletPerformance()
-        .withTotalValue(totalAmount.get().setScale(2, RoundingMode.HALF_UP))
-        .withBestPerformanceAssetSymbol(bestAssetPerformance.get().getSymbol())
-        .withBestAssetPerformance(bestPercentageChange.get().toString())
-        .withWorstPerformanceAssetSymbol(worstAssetPerformance.get().getSymbol())
-        .withWorstAssetPerformance(worstPercentageChange.get().toString())
-        .withDateTime(dateTime)
+        .withTotalValue(totalValue.setScale(2, RoundingMode.HALF_UP))
+        .withBestPerformanceAssetSymbol(bestAssetPerformance.getSymbol())
+        .withBestAssetPerformance(bestPercentageChange.toString())
+        .withWorstPerformanceAssetSymbol(worstAssetPerformance.getSymbol())
+        .withWorstAssetPerformance(worstPercentageChange.toString())
+        .withDateTime(localDateTime)
         .build();
+  }
+
+  private static BigDecimal calculatePercentageChange(BigDecimal currentPrice, BigDecimal initialPrice) {
+    var priceDifference = currentPrice.subtract(initialPrice);
+    return priceDifference
+        .divide(initialPrice, 10, RoundingMode.HALF_UP)
+        .multiply(new BigDecimal("100"))
+        .setScale(2, RoundingMode.HALF_UP);
   }
 
 }
