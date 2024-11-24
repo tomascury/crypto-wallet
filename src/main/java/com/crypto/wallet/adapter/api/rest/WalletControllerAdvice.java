@@ -1,6 +1,6 @@
-package com.crypto.wallet.adapter.api;
+package com.crypto.wallet.adapter.api.rest;
 
-import com.crypto.wallet.adapter.api.dto.*;
+import com.crypto.wallet.adapter.api.rest.dto.*;
 import jakarta.servlet.http.*;
 import java.time.*;
 import java.util.*;

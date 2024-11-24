@@ -1,6 +1,6 @@
-package com.crypto.wallet.adapter.api.dto;
+package com.crypto.wallet.adapter.api.rest.dto;
 
-import com.crypto.wallet.adapter.api.validation.*;
+import com.crypto.wallet.adapter.api.rest.validation.*;
 import com.crypto.wallet.core.domain.*;
 import com.fasterxml.jackson.annotation.*;
 import jakarta.validation.*;

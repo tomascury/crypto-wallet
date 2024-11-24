@@ -1,5 +1,6 @@
 package com.crypto.wallet.core.config;
 
+import com.crypto.wallet.core.ports.api.*;
 import com.crypto.wallet.core.ports.spi.*;
 import com.crypto.wallet.core.service.*;
 import org.springframework.boot.context.properties.*;

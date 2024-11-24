@@ -1,10 +1,9 @@
-package com.crypto.wallet.adapter.api;
+package com.crypto.wallet.adapter.api.rest;
 
-import com.crypto.wallet.adapter.api.dto.*;
-import com.crypto.wallet.adapter.api.validation.*;
-import com.crypto.wallet.core.service.*;
+import com.crypto.wallet.adapter.api.rest.dto.*;
+import com.crypto.wallet.adapter.api.rest.validation.*;
+import com.crypto.wallet.core.ports.api.*;
 import jakarta.validation.*;
-import java.time.*;
 import org.apache.logging.log4j.*;
 import org.springframework.http.*;
 import org.springframework.validation.annotation.*;

@@ -1,6 +1,6 @@
-package com.crypto.wallet.adapter.spi;
+package com.crypto.wallet.adapter.spi.provider;
 
-import com.crypto.wallet.adapter.spi.dto.*;
+import com.crypto.wallet.adapter.spi.provider.dto.*;
 import com.crypto.wallet.core.config.*;
 import com.crypto.wallet.core.domain.*;
 import com.crypto.wallet.core.ports.spi.*;
@@ -26,6 +26,5 @@ public class CoinCapMarketDataProvider implements AssetMarketDataProvider {
     var coinCapDataDto = restTemplate.getForObject(uri, CoinCapDataDto.class);
     assert coinCapDataDto != null;
     return coinCapDataDto.toDomain();
-
   }
 }

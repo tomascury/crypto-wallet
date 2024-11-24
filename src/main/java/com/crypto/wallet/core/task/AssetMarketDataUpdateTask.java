@@ -2,8 +2,8 @@ package com.crypto.wallet.core.task;
 
 import com.crypto.wallet.core.config.*;
 import com.crypto.wallet.core.domain.*;
+import com.crypto.wallet.core.ports.api.*;
 import com.crypto.wallet.core.ports.spi.*;
-import com.crypto.wallet.core.service.*;
 import java.util.*;
 import java.util.concurrent.*;
 import org.apache.logging.log4j.*;

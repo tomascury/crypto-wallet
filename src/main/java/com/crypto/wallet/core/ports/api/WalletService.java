@@ -1,4 +1,4 @@
-package com.crypto.wallet.core.service;
+package com.crypto.wallet.core.ports.api;
 
 
 import com.crypto.wallet.core.domain.*;

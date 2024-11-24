@@ -62,7 +62,6 @@ public class Wallet {
         '}';
   }
 
-
   public static final class WalletBuilder {
     private Long id;
     private String name;

@@ -2,13 +2,13 @@ package com.crypto.wallet.core.service;
 
 import com.crypto.wallet.core.config.*;
 import com.crypto.wallet.core.domain.*;
+import com.crypto.wallet.core.ports.api.*;
 import com.crypto.wallet.core.ports.spi.*;
 import java.math.*;
 import java.time.*;
 import java.util.*;
 import java.util.concurrent.atomic.*;
 import org.apache.logging.log4j.*;
-import org.apache.logging.log4j.util.*;
 import org.springframework.data.domain.*;
 
 public class DefaultWalletService implements WalletService {
@@ -29,9 +29,6 @@ public class DefaultWalletService implements WalletService {
 
   @Override
   public Wallet save(Wallet wallet) {
-    if (Strings.isBlank(wallet.getName())) {
-      throw new IllegalArgumentException("Wallet name is null.");
-    }
     return walletJpaRepository.save(wallet);
   }
 

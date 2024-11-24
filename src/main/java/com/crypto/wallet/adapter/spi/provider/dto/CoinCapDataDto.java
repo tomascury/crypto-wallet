@@ -1,4 +1,4 @@
-package com.crypto.wallet.adapter.spi.dto;
+package com.crypto.wallet.adapter.spi.provider.dto;
 
 import com.crypto.wallet.core.domain.*;
 import java.math.*;
