@@ -26,14 +26,20 @@ public class AssetMarketDataUpdateTask {
   }
 
   @Scheduled(cron = "${asset.market.data.update.cron}")
-  public void update() {
-    try (ExecutorService executorService = Executors.newFixedThreadPool(assetMarketProperties.threadPool())) {
+  public void update() throws InterruptedException {
+    ExecutorService executorService = Executors.newFixedThreadPool(assetMarketProperties.threadPool());
+    try {
       List<Wallet> wallets = walletService.findAll();
       wallets.forEach(wallet -> {
         wallet.getAssets().forEach(asset -> executorService.submit(() -> updateAssetMarketData(wallet, asset)));
       });
     } catch (Exception e) {
       LOGGER.error("Asset market data update failed: ", e);
+    } finally {
+      executorService.shutdown();
+      if (!executorService.awaitTermination(60L, TimeUnit.SECONDS)){
+        executorService.shutdown();
+      }
     }
   }
 
